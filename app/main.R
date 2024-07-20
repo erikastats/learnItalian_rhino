@@ -31,7 +31,8 @@ server <- function(id) {
 
       phrases_data = tibble(
         phrase = character(),
-        date_created = ymd_hms(character())
+        date_created = ymd_hms(character()),
+        last_usage = ymd_hms(character())
       )
 
     )

@@ -1,6 +1,6 @@
 # app/view/data_panel.R
 
-box:use(
+box::use(
   shiny[moduleServer, NS, tagList, actionButton, textInput],
   bslib[card, card_header, card_body, card_footer]
 )
