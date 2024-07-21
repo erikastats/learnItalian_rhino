@@ -7,8 +7,11 @@ box::use(
 )
 
 box::use(
-  app/view/register_panel
+  app/view/register_panel,
+  app/logic/importing_data[italian_table]
 )
+
+
 
 #' @export
 ui <- function(id) {
@@ -27,15 +30,7 @@ server <- function(id) {
   moduleServer(id, function(input, output, session) {
 
     #reactive values
-    r <- reactiveValues(
-
-      phrases_data = tibble(
-        phrase = character(),
-        date_created = ymd_hms(character()),
-        last_usage = ymd_hms(character())
-      )
-
-    )
+    r <- reactiveValues({ phrases_data = italian_table })
 
     #modules
     register_panel$server("register", r)

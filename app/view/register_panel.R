@@ -2,7 +2,7 @@
 
 box::use(
   shiny[moduleServer, NS, tagList,
-         icon, observeEvent,
+         icon, observeEvent, updateTextInput,
         renderText, textOutput , textInput,
         img, h3, reactive, renderPrint, uiOutput, column],
   bslib[card, card_header, card_body, card_footer],
@@ -88,9 +88,11 @@ server <- function(id, r) {
       )
 
       # Update the reactive data frame in the main app
-
-
       r$phrases_data <- bind_rows(r$phrases_data, new_row())
+
+      # Reset the text input field
+      updateTextInput(session, "text", value = "")
+
     })
 
 
@@ -98,7 +100,7 @@ server <- function(id, r) {
     table_data$server("table", reactive({ r$phrases_data }))
     save_table_module$server("save",
                              reactive({ r$phrases_data }),
-                             "app/data/product_table.rds")
+                             "app/data/italian_table.rds")
 
 
   })
