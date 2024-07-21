@@ -1,7 +1,7 @@
 # app/view/save_table_module.R
 
-box:use(
-  shiny[moduleServer, NS, tagList, textInput, icon],
+box::use(
+  shiny[moduleServer, NS, tagList, textInput, icon, observeEvent],
   shinyWidgets[show_alert, actionBttn],
 )
 
@@ -15,7 +15,7 @@ ui <- function(id, Label){
   tagList(
     actionBttn(ns("save"),
                label = Label,
-               icon = icon("floppy_disk")
+               icon = icon("floppy-disk")
     )
   )
 }

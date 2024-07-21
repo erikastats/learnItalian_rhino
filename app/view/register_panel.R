@@ -2,11 +2,11 @@
 
 box::use(
   shiny[moduleServer, NS, tagList,
-        actionButton, icon, observeEvent,
+         icon, observeEvent,
         renderText, textOutput , textInput,
         img, h3, reactive, renderPrint, uiOutput, column],
   bslib[card, card_header, card_body, card_footer],
-  shinyWidgets[show_alert],
+  shinyWidgets[show_alert, actionBttn],
   lubridate[now, ymd_hms],
   tibble[tibble],
   stringr[str_to_sentence],
@@ -15,7 +15,8 @@ box::use(
 )
 
 box::use(
-  app/view/table_data
+  app/view/table_data,
+  app/view/save_table_module
 )
 
 
@@ -45,9 +46,12 @@ ui <- function(id){
                      textOutput(ns("text_out"))),
       table_data$ui(ns("table"))
       ),
-    card_footer( actionButton(ns("go"),
+    card_footer( actionBttn(ns("go"),
                               label = "Add phrase",
-                              icon = icon("plus")))
+                              icon = icon("plus")),
+                 save_table_module$ui(ns("save"), Label = "Save table")
+
+                 )
   ))
 }
 
@@ -91,9 +95,11 @@ server <- function(id, r) {
 
 
     # module
-    table_data$server("table", reactive( {
-      r$phrases_data
-      } ))
+    table_data$server("table", reactive({ r$phrases_data }))
+    save_table_module$server("save",
+                             reactive({ r$phrases_data }),
+                             "app/data/product_table.rds")
+
 
   })
 }
