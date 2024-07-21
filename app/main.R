@@ -8,7 +8,7 @@ box::use(
 
 box::use(
   app/view/register_panel,
-  app/logic/importing_data[italian_table]
+  app/logic/importing_data
 )
 
 
@@ -30,7 +30,8 @@ server <- function(id) {
   moduleServer(id, function(input, output, session) {
 
     #reactive values
-    r <- reactiveValues({ phrases_data = italian_table })
+    r <- reactiveValues(
+      phrases_data = importing_data$italian_table )
 
     #modules
     register_panel$server("register", r)

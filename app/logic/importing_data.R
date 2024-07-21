@@ -9,10 +9,11 @@ directory <- "app/data/"
 file_name <- "italian_table.rds"
 file_path <- file.path(directory, file_name)
 
+
 if (file.exists(file_path)) {
-  italian_table <- readRDS("app/data/italian_table.rds")
+  it_table <- readRDS("app/data/italian_table.rds")
 } else {
-  italian_table <- tibble(
+  it_table <- tibble(
     phrase = character(),
     date_created = ymd_hms(character()),
     last_usage = ymd_hms(character())
@@ -20,4 +21,6 @@ if (file.exists(file_path)) {
 }
 
 #' @export
-italian_table
+italian_table <- it_table
+
+

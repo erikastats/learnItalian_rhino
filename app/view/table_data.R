@@ -2,7 +2,8 @@
 
 box::use(
   shiny[moduleServer, NS, tagList, br, uiOutput, renderPrint],
-  reactable[reactableOutput, renderReactable, reactable, colDef]
+  reactable[reactableOutput, renderReactable, reactable, colDef],
+  dplyr[arrange]
 )
 
 
@@ -28,6 +29,7 @@ server <- function(id, data) {
     # output
     output$table_data <- renderReactable({
       data() |>
+        arrange(desc(last_usage), desc(date_created)) |>
         reactable(
           searchable = TRUE,
           highlight = TRUE,
