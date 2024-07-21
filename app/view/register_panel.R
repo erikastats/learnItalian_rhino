@@ -67,7 +67,15 @@ server <- function(id, r) {
     })
 
     output$pure_data <- renderPrint({
-      r$phrases_data
+      new_row()
+    })
+
+    # reactive
+    new_row <- reactive({
+      tibble(
+      phrase = c(input$text |> str_to_sentence()),
+      date_created = c(now()),
+      last_usage = c(NA) )
     })
 
     # Observe
@@ -79,18 +87,16 @@ server <- function(id, r) {
       )
 
       # Update the reactive data frame in the main app
-      new_row <- tibble(
-        phrase = input$text |> str_to_sentence(),
-        date_created = now(),
-        last_usage = ymd_hms(character())
-      )
 
-      r$phrases_data <- bind_rows(r$phrases_data, new_row)
+
+      r$phrases_data <- bind_rows(r$phrases_data, new_row())
     })
 
 
     # module
-    table_data$server("table", reactive( {r$phrases_data} ))
+    table_data$server("table", reactive( {
+      r$phrases_data
+      } ))
 
 
 
