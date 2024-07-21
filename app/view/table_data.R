@@ -14,8 +14,7 @@ ui <- function(id){
   ns <- NS(id)
   tagList(
     br(),
-    reactableOutput(ns("table_data")),
-    uiOutput(ns("pure_data"))
+    reactableOutput(ns("table_data"))
   )
 }
 
@@ -46,8 +45,6 @@ server <- function(id, data) {
         )
     })
 
-    output$pure_data <- renderPrint({
-      data()
-    })
+
   })
 }

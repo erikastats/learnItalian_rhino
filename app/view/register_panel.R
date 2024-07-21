@@ -4,7 +4,7 @@ box::use(
   shiny[moduleServer, NS, tagList,
         actionButton, icon, observeEvent,
         renderText, textOutput , textInput,
-        img, h3, reactive, renderPrint, uiOutput],
+        img, h3, reactive, renderPrint, uiOutput, column],
   bslib[card, card_header, card_body, card_footer],
   shinyWidgets[show_alert],
   lubridate[now, ymd_hms],
@@ -37,13 +37,13 @@ ui <- function(id){
     card(
     full_screen = TRUE,
     card_header( "Insert an italian phrase here" ),
-    card_body(
-      textInput(ns("text"),
-                label = "",
-                placeholder = "Add italian phrase"),
-      textOutput(ns("text_out")),
-      table_data$ui(ns("table")),
-      uiOutput(ns("pure_data"))
+    card_body(column(width = 6,
+                     textInput(ns("text"),
+                               label = "",
+                               placeholder = "Add italian phrase")),
+              column(width = 6,
+                     textOutput(ns("text_out"))),
+      table_data$ui(ns("table"))
       ),
     card_footer( actionButton(ns("go"),
                               label = "Add phrase",
@@ -66,9 +66,6 @@ server <- function(id, r) {
       input$text
     })
 
-    output$pure_data <- renderPrint({
-      new_row()
-    })
 
     # reactive
     new_row <- reactive({
@@ -97,8 +94,6 @@ server <- function(id, r) {
     table_data$server("table", reactive( {
       r$phrases_data
       } ))
-
-
 
   })
 }
