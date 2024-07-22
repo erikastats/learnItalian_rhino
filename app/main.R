@@ -1,6 +1,6 @@
 box::use(
   shiny[bootstrapPage, div, moduleServer, NS, renderUI, tags, uiOutput,
-        reactiveValues],
+        reactiveValues, reactive],
   bslib[page_navbar, nav_panel],
   tibble[tibble],
   lubridate[ymd_hms]
@@ -8,7 +8,8 @@ box::use(
 
 box::use(
   app/view/register_panel,
-  app/logic/importing_data
+  app/logic/importing_data,
+  app/view/cards_panel
 )
 
 
@@ -20,7 +21,8 @@ ui <- function(id) {
     title = "Learning Italian helper",
     nav_panel(title = "Register",
               register_panel$ui(ns("register"))),
-    nav_panel(title = "Cards"),
+    nav_panel(title = "Cards",
+              cards_panel$ui(ns("cards"))),
     nav_panel(title = "Data")
   )
 }
@@ -35,6 +37,7 @@ server <- function(id) {
 
     #modules
     register_panel$server("register", r)
+    cards_panel$server("cards", reactive({ r$phrases_data}))
 
 
   })
