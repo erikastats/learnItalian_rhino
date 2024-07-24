@@ -4,7 +4,7 @@ box::use(
   shiny[moduleServer, NS, tagList,
          uiOutput, renderUI, icon,
         fluidRow, column, bindEvent,
-        h3],
+        h3, reactive],
   bslib[card, card_header, card_body,
         card_footer, value_box],
   shinyWidgets[radioGroupButtons, actionBttn],
