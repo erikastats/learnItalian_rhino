@@ -34,12 +34,15 @@ server <- function(id, data, card_number) {
   moduleServer(id, function(input, output, session){
     ns <- session$ns
 
+
     # reactive
     current_index <- reactiveVal(1)
     df_phrases <- reactive({
-      data |>
+      data() |>
         filter(row_number() == current_index())
     })
+
+    card_number <- reactiveVal( nrow( data() ))
 
     # output
     output$progress <- renderUI({
@@ -75,8 +78,8 @@ server <- function(id, data, card_number) {
         saved_times(bind_rows(saved_times(), new_entry))
 
         # Update last_usage for the current phrase
-        data <- data |>
-          mutate(last_usage = if_else(row_number() == current_index(), now(), last_usage))
+        # data <- data |>
+        #   mutate(last_usage = if_else(row_number() == current_index(), now(), last_usage))
 
         # Increment the index
         current_index(current_index() + 1)

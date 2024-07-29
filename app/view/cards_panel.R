@@ -11,8 +11,7 @@ box::use(
   dplyr[summarise, pull, n, filter]
 )
 
-box::use(app/logic/random_cards[select_random_cards,
-                                card_picker_df],
+box::use(app/logic/random_cards[select_random_cards],
          app/view/random_cards_module,
          app/logic/importing_data[italian_table, total_phrases]
          )
@@ -50,7 +49,8 @@ ui <- function(id){
                                        label = "Generate cards") )
              )
              )
-    )
+    ),
+    random_cards_module$ui(ns("card_random"))
 
   )
 }
@@ -64,18 +64,18 @@ server <- function(id) {
     ns <- session$ns
 
     # reactive
-    card_p <- reactive({
-      card_picker_df |>
-        filter(input$card_picker == card_picker) |>
-        pull(c_number)
-    }) |>
-      bindEvent(input$generate_cards)
 
     data_cards <- reactive({
-      select_random_cards(italian_table, card_p() )
+      select_random_cards(italian_table, input$card_picker )
     }) |>
       bindEvent(input$generate_cards)
 
+    # output
+
+    # module
+    random_cards_module$server("card_random",
+                               data = reactive({data_cards()})
+                               )
 
   })
 }
