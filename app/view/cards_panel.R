@@ -12,7 +12,10 @@ box::use(
 )
 
 box::use(app/logic/random_cards[select_random_cards,
-                                card_picker_df])
+                                card_picker_df],
+         app/view/random_cards_module,
+         app/logic/importing_data[italian_table, total_phrases]
+         )
 
 # UI ----------------------------------------------------------------------
 
@@ -24,7 +27,9 @@ ui <- function(id){
     fluidRow(
       column(width = 6, card(
         full_screen = TRUE,
-        card_body( uiOutput(ns("value_box")) )
+        value_box(title = "Total cards",
+                  value = total_phrases,
+                  icon = icon("rug") )
       )),
       column(width = 6,
              card(
@@ -45,8 +50,7 @@ ui <- function(id){
                                        label = "Generate cards") )
              )
              )
-    ),
-    uiOutput(ns("card_phrase"))
+    )
 
   )
 }
@@ -55,7 +59,7 @@ ui <- function(id){
 # SERVER ------------------------------------------------------------------
 
 #' @export
-server <- function(id, data) {
+server <- function(id) {
   moduleServer(id, function(input, output, session){
     ns <- session$ns
 
@@ -68,37 +72,10 @@ server <- function(id, data) {
       bindEvent(input$generate_cards)
 
     data_cards <- reactive({
-      select_random_cards(data(), card_p() )
+      select_random_cards(italian_table, card_p() )
     }) |>
       bindEvent(input$generate_cards)
 
-    # output
-    output$value_box <- renderUI({
-      value_cards = data() |>
-        summarise( unique_phrase = n()) |>
-        pull(unique_phrase)
-
-      value_box(title = "Total cards",
-                value = value_cards, icon = icon("rug") )
-    })
-
-
-    output$card_phrase <- renderUI({
-
-      card(
-        full_screen = TRUE,
-        card_header(progressBar(id = ns("progress_cards"),
-                                value = 1,
-                                total = card_p()
-                                )),
-        card_body(
-            h3()
-        ),
-        card_footer( actionBttn(ns("next_card"),
-                                label = "Next card") )
-      )
-
-    })
 
   })
 }

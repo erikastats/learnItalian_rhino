@@ -37,7 +37,7 @@ server <- function(id) {
 
     #modules
     register_panel$server("register", r)
-    cards_panel$server("cards", reactive({ r$phrases_data}))
+    cards_panel$server("cards" )
 
 
   })

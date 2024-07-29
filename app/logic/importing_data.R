@@ -23,4 +23,5 @@ if (file.exists(file_path)) {
 #' @export
 italian_table <- it_table
 
-
+#' @export
+total_phrases <- italian_table |> nrow()

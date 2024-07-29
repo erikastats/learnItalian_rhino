@@ -1,11 +1,13 @@
-# app/view/cards_panel.R
+# app/view/random_cards_module
 
 box::use(
   shiny[moduleServer, NS, tagList,
         textOutput, renderText, bindEvent,
-        h3, reactive],
+        h3, reactive, uiOutput, renderUI, reactiveVal,
+        observeEvent],
   shinyWidgets[ actionBttn, progressBar, updateProgressBar],
-  dplyr[pull, filter]
+  dplyr[pull, filter],
+  lubridate[now]
 )
 
 
@@ -14,16 +16,10 @@ box::use(
 
 
 #' @export
-ui <- function(id, card_number){
+ui <- function(id){
   ns <- NS(id)
   tagList(
-    progressBar(id = ns("progress_card"),
-                value = 1,
-                total = card_number,
-                status = "info",
-                display_pct = TRUE,
-                striped = TRUE,
-                title = "Quantity of cards to study"),
+    uiOutput(ns("progress")),
     h3(textOutput(ns("text_card"))),
     actionBttn(ns("next_card"), label = "Next card!")
 
@@ -34,25 +30,63 @@ ui <- function(id, card_number){
 # SERVER ------------------------------------------------------------------
 
 #' @export
-server <- function(id, data) {
+server <- function(id, data, card_number) {
   moduleServer(id, function(input, output, session){
     ns <- session$ns
 
     # reactive
+    current_index <- reactiveVal(1)
     df_phrases <- reactive({
       data |>
-        filter(row_number() == (input$next_card + 1))
+        filter(row_number() == current_index())
     })
-    # output
-    output$text_card <- renderText({
-      df_phrases() |> pull(phrase)
-    }) |>
-      bindEvent(input$next_card)
 
+    # output
+    output$progress <- renderUI({
+      progressBar(id = ns("progress_card"),
+                  value = current_index(),
+                  total = card_number(),
+                  status = "info",
+                  display_pct = TRUE,
+                  striped = TRUE,
+                  title = "Quantity of cards to study")
+    })
+
+    output$text_card <- renderText({
+      if (current_index() <= card_number()) {
+        df_phrases() |> pull(phrase)
+      } else {
+        "You completed your practice. Good Job!"
+      }
+    })
+
+    # observe
     observeEvent(input$next_card, {
-      updateProgressBar(session = session,
-                        id = ns("progress_card"),
-                        value = input$next_card + 1)
+      if (current_index() <= card_number()) {
+        updateProgressBar(session = session,
+                          id = ns("progress_card"),
+                          value = current_index())
+
+        # Save the current time the button was clicked
+        new_entry <- data.frame(
+          phrase = isolate(df_phrases() |> pull(phrase)),
+          time_clicked = now()
+        )
+        saved_times(bind_rows(saved_times(), new_entry))
+
+        # Update last_usage for the current phrase
+        data <- data |>
+          mutate(last_usage = if_else(row_number() == current_index(), now(), last_usage))
+
+        # Increment the index
+        current_index(current_index() + 1)
+      } else {
+        # Restart logic
+        current_index(1)
+        updateProgressBar(session = session,
+                          id = ns("progress_card"),
+                          value = current_index(1))
+      }
 
     })
 
